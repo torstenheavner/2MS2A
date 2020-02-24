@@ -12,8 +12,12 @@ sys.path.append("T:/all")
 bot = commands.Bot(command_prefix="b2m.")
 
 
-with open("data.json", "r") as dataFile:
-    cogs = json.loads(file.read())["cogs"]
+def getData():
+    with open("data.json", "r") as dataFile:
+        return json.loads(dataFile.read())
+
+
+cogs = getData()["cogs"]
 for extension in cogs:
     bot.load_extension(extension)
     print("%s LOADED." % extension)
@@ -34,8 +38,7 @@ async def ping(ctx):
 @bot.command(name="reload", brief="Reload one or all of the bots cogs.")
 async def _reload(ctx, cog="all"):
     log = []
-    with open("data.json", "r") as dataFile:
-        cogs = json.loads(file.read())["cogs"]
+    cogs = getData()["cogs"]
     if cog == "all":
         for extension in cogs:
             try:
