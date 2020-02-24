@@ -1,2 +1,3 @@
 # 2MS2A
-2MS2A Discord bot
+## Too much stuff to automate.
+The dumb discord bot with way too many functions.
