@@ -9,11 +9,11 @@ def clear(): return os.system("cls")
 
 
 sys.path.append("T:/all")
-bot = commands.Bot(command_prefix="2mb.")
+bot = commands.Bot(command_prefix="b2m.")
+
 
 with open("data.json", "r") as dataFile:
     cogs = json.loads(file.read())["cogs"]
-    
 for extension in cogs:
     bot.load_extension(extension)
     print("%s LOADED." % extension)
@@ -31,7 +31,7 @@ async def ping(ctx):
     print("%s PINGED THE BOT." % ctx.author.name.upper())
 
 
-@bot.command(name="reload", brief="Reload all or one of the bots cogs.")
+@bot.command(name="reload", brief="Reload one or all of the bots cogs.")
 async def _reload(ctx, cog="all"):
     log = []
     with open("data.json", "r") as dataFile:
@@ -39,8 +39,7 @@ async def _reload(ctx, cog="all"):
     if cog == "all":
         for extension in cogs:
             try:
-                bot.unload_extension(extension)
-                bot.load_extension(extension)
+                bot.reload_extension(extension)
                 log.append("**%s** reloaded successfully." % extension)
             except:
                 bot.load_extension(extension)
