@@ -1,9 +1,10 @@
+import asyncio as a
 import json
 import random
 
 import discord
 import numpy as np
-from discord.ext import commands
+from discord.ext import tasks, commands
 
 
 def getData():
@@ -19,6 +20,49 @@ def setData(_dict):
 class MISC(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.hell_name = ["hell", "666"]
+        self.ticker_channel.start()
+
+    def cog_unload(self):
+        self.ticker_channel.cancel()
+
+    @tasks.loop(minutes=5)
+    async def ticker_channel(self):
+        hell = discord.utils.get(self.bot.get_guild(677689511525875715).channels, id=680075322884096026)
+        await hell.edit(name=self.hell_name[self.ticker_channel.current_loop % 2])
+
+    @commands.command(brief="Start a rating on a message.")
+    async def ratings(self, ctx):
+        await ctx.message.delete()
+        channel = ctx.channel
+        messages = await channel.history(limit=5).flatten()
+        message = messages[0]
+        await message.add_reaction("⬆")
+        await message.add_reaction("⬇")
+        score = 0
+        fame = discord.utils.get(self.bot.get_guild(677689511525875715).channels, name="hall-of-fame")
+        shame = discord.utils.get(self.bot.get_guild(677689511525875715).channels, name="hall-of-shame")
+
+        def check(reaction, user):
+            return reaction.message.id == message.id
+
+        await a.sleep(1)
+
+        while True:
+            reaction = await self.bot.wait_for("reaction_add", check=check)
+            if reaction[0].emoji == "⬆":
+                score += 1
+            elif reaction[0].emoji == "⬇":
+                score -= 1
+
+            if score >= 5:
+                await ctx.send("**%s** recieved reddit gold!" % message.author.name)
+                await fame.send("**%s**: %s" % (message.author.name, message.content))
+                return
+            elif score <= -5:
+                await ctx.send("**%s**'s post got removed by mods." % message.author.name)
+                await shame.send("**%s**: %s" % (message.author.name, message.content))
+                return
 
     @commands.command(brief="Start a poll.")
     async def poll(self, ctx, *, things=""):

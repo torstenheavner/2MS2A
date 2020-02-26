@@ -81,7 +81,7 @@ class DND(commands.Cog):
 
                 bonus = 2 if level < 5 else (3 if level < 9 else (4 if level < 13 else (5 if level < 17 else 6)))
 
-                if message.channel.name == "hell":
+                if message.channel.name in ["hell", "666"]:
                     roll = randint(1, 20) + bonus
                     if (roll < self.ac or roll - bonus == 1) and roll - bonus != 20:
                         await message.delete()
@@ -129,7 +129,6 @@ class DND(commands.Cog):
 
     @tasks.loop(minutes=5)
     async def hell_ac(self):
-        bots = discord.utils.get(self.bot.get_guild(677689511525875715).channels, name="bots")
         if randint(1, 100) <= 33:
             ac = randint(1, 20)
             self.ac = ac
