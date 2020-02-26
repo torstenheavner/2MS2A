@@ -13,7 +13,7 @@ def getData():
 
 def setData(data):
     with open("data.json", "w") as dataFile:
-        dataFile.write(json.dumps(data))
+        dataFile.write(json.dumps(data, indent=2))
 
 
 class Colors(commands.Cog):

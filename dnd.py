@@ -12,7 +12,7 @@ def getData():
 
 def setData(_dict):
     with open("data.json", "w") as levelsFile:
-        levelsFile.write(json.dumps(_dict))
+        levelsFile.write(json.dumps(_dict, indent=2))
 
 
 levelxp = [0, 300, 900, 2700, 6500, 14000, 23000, 34000, 48000, 64000, 85000, 100000, 120000, 140000, 165000, 195000, 225000, 265000, 305000, 355000]
@@ -66,13 +66,18 @@ class DND(commands.Cog):
         if not message.author.bot:
             try:
                 data = getData()
+                totalXP = 0
                 try:
                     level = data["user stats"][message.author.name]["level"]
-                    data["user stats"][message.author.name]["xp"] += (randint(1, 10))
+                    num = randint(1, 10)
+                    data["user stats"][message.author.name]["xp"] += num
+                    totalXP += num
                 except:
                     data["user stats"][message.author.name] = self.base
                     level = data["user stats"][message.author.name]["level"]
-                    data["user stats"][message.author.name]["xp"] += randint(1, 10)
+                    num = randint(1, 10)
+                    data["user stats"][message.author.name]["xp"] += num
+                    totalXP += num
 
                 bonus = 2 if level < 5 else (3 if level < 9 else (4 if level < 13 else (5 if level < 17 else 6)))
 
@@ -85,13 +90,15 @@ class DND(commands.Cog):
                             await message.channel.send("**%s just nat 1'd!**" % message.author.name)
                     else:
                         await message.delete()
-                        # await message.channel.send("(%s < %s+%s) **%s**: %s" % (self.ac, roll - bonus, bonus, message.author.name, message.content))
                         await message.channel.send("**%s**: %s" % (message.author.name, message.content))
                         if roll - bonus == 20:
                             await message.channel.send("**%s just nat 20'd!**" % message.author.name)
                         data["user stats"][message.author.name]["xp"] += self.ac
+                        totalXP += self.ac
                         if roll - bonus > 10:
-                            data["user stats"][message.author.name]["xp"] += randint(0, roll)
+                            num = randint(0, roll)
+                            data["user stats"][message.author.name]["xp"] += num
+                            totalXP += num
 
                 else:
                     try:
@@ -104,18 +111,19 @@ class DND(commands.Cog):
                         if word in message.content.lower() and not (message.content.startswith("2m.unban") or message.content.startswith("2m.ban")):
                             data["user stats"][message.author.name]["health"] -= 1
                             await message.channel.send("Uh oh! You fucking idiot. You just said '%s'.\n\nDie." % word)
-                            print("%s USED A BANNED WORD." % message.author.name)
+                            print("%s USED A BANNED WORD." % message.author.name.upper())
 
                     if data["user stats"][message.author.name]["xp"] >= levelxp[level]:
                         data["user stats"][message.author.name]["level"] += 1
                         await message.channel.send("**%s** levelled up to level %s!" % (message.author.name, data["user stats"][message.author.name]["level"]))
-                        print("%s LEVELLED UP." % message.author.name)
+                        print("%s LEVELLED UP." % message.author.name.upper())
 
                     if data["user stats"][message.author.name]["health"] <= 0:
                         data["user stats"][message.author.name] = self.base
                         await message.channel.send("Oop, **%s** is dead. Now you gotta reroll stats!" % message.author.name)
-                        print("%s DIED." % message.author.name)
+                        print("%s DIED." % message.author.name.upper())
                 setData(data)
+                print("%s GAINED %s XP." % (message.author.name.upper(), totalXP))
             except:
                 pass
 
@@ -125,7 +133,6 @@ class DND(commands.Cog):
         if randint(1, 100) <= 33:
             ac = randint(1, 20)
             self.ac = ac
-            # await bots.send("__**Hell's AC is now %s!**__" % ac)
             print("HELL'S AC HAS BEEN REROLLED. (%s)" % self.ac)
 
     @commands.command(brief="Get the 10 highest levelled people in the server.")

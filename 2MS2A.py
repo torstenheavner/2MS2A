@@ -9,7 +9,7 @@ def clear(): return os.system("cls")
 
 
 sys.path.append("T:/all")
-bot = commands.Bot(command_prefix="b2m.")
+bot = commands.Bot(command_prefix="2m.")
 
 
 def getData():
@@ -60,5 +60,5 @@ async def _reload(ctx, cog="all"):
         print("%s RELOADED THE %s MODULE." % (ctx.author.name.upper(), cog.upper()))
 
 
-with open("T:/all/2ms2a_b_creds.txt", "r") as token:
+with open("T:/all/2ms2a_creds.txt", "r") as token:
     bot.run(token.read())

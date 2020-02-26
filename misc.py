@@ -13,7 +13,7 @@ def getData():
 
 def setData(_dict):
     with open("data.json", "w") as levelsFile:
-        levelsFile.write(json.dumps(_dict))
+        levelsFile.write(json.dumps(_dict, indent=2))
 
 
 class MISC(commands.Cog):
