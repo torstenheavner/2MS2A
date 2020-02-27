@@ -1,4 +1,3 @@
-import asyncio as a
 import json
 import random
 
@@ -20,49 +19,114 @@ def setData(_dict):
 class MISC(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.hell_name = ["hell", "666"]
-        self.ticker_channel.start()
+        self.upvote = "⬆️"
+        self.downvote = "⬇️"
+        self.threshold = 4
 
-    def cog_unload(self):
-        self.ticker_channel.cancel()
+    @commands.Cog.listener()
+    async def on_reaction_remove(self, reaction, user):
+        if reaction.emoji in [self.upvote, self.downvote]:
+            data = getData()
+            fame = discord.utils.get(self.bot.get_guild(677689511525875715).channels, name="hall-of-fame")
+            shame = discord.utils.get(self.bot.get_guild(677689511525875715).channels, name="hall-of-shame")
+            if str(reaction.message.id) in data["message scores"]:
+                num = 0
+                if reaction.emoji == self.upvote:
+                    num = -1
+                    print("%s UN UPVOTED A MESSAGE." % user.name.upper())
+                else:
+                    num = 1
+                    print("%s UN DOWNVOTED A MESSAGE." % user.name.upper())
+                data["message scores"][str(reaction.message.id)] += num
+            else:
+                num = 0
+                if reaction.emoji == self.upvote:
+                    num = -1
+                    print("%s UN UPVOTED A MESSAGE." % user.name.upper())
+                else:
+                    num = 1
+                    print("%s UN DOWNVOTED A MESSAGE." % user.name.upper())
+                data["message scores"][str(reaction.message.id)] = num
 
-    @tasks.loop(minutes=5)
-    async def ticker_channel(self):
-        hell = discord.utils.get(self.bot.get_guild(677689511525875715).channels, id=680075322884096026)
-        await hell.edit(name=self.hell_name[self.ticker_channel.current_loop % 2])
+            fame_messages = await discord.utils.get(self.bot.get_guild(677689511525875715).channels, name="hall-of-fame").history(limit=10000).flatten()
+            shame_messages = await discord.utils.get(self.bot.get_guild(677689511525875715).channels, name="hall-of-shame").history(limit=10000).flatten()
 
-    @commands.command(brief="Start a rating on a message.")
-    async def ratings(self, ctx):
-        await ctx.message.delete()
-        channel = ctx.channel
-        messages = await channel.history(limit=5).flatten()
-        message = messages[0]
-        await message.add_reaction("⬆")
-        await message.add_reaction("⬇")
-        score = 0
-        fame = discord.utils.get(self.bot.get_guild(677689511525875715).channels, name="hall-of-fame")
-        shame = discord.utils.get(self.bot.get_guild(677689511525875715).channels, name="hall-of-shame")
+            if data["message scores"][str(reaction.message.id)] >= self.threshold and not "**%s**: %s" % (reaction.message.author.name, reaction.message.content) in [message.content for message in fame_messages]:
+                await reaction.message.channel.send("**%s** got reddit gold!" % reaction.message.author.name)
+                await fame.send("**%s**: %s\n%s" % (reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])))
+            elif data["message scores"][str(reaction.message.id)] <= -self.threshold and not "**%s**: %s" % (reaction.message.author.name, reaction.message.content) in [message.content for message in shame_messages]:
+                await reaction.message.channel.send("**%s** posted cringe!" % reaction.message.author.name)
+                await shame.send("**%s**: %s\n%s" % (reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])))
+            else:
 
-        def check(reaction, user):
-            return reaction.message.id == message.id
+                if data["message scores"][str(reaction.message.id)] < self.threshold:
+                    for message in fame_messages:
+                        if "**%s**: %s" % (reaction.message.author.name, reaction.message.content) == message.content:
+                            await message.delete()
 
-        await a.sleep(1)
+                if data["message scores"][str(reaction.message.id)] > -self.threshold:
+                    for message in shame_messages:
+                        if "**%s**: %s" % (reaction.message.author.name, reaction.message.content) == message.content:
+                            await message.delete()
 
-        while True:
-            reaction = await self.bot.wait_for("reaction_add", check=check)
-            if reaction[0].emoji == "⬆":
-                score += 1
-            elif reaction[0].emoji == "⬇":
-                score -= 1
+            setData(data)
 
-            if score >= 5:
-                await ctx.send("**%s** recieved reddit gold!" % message.author.name)
-                await fame.send("**%s**: %s" % (message.author.name, message.content))
-                return
-            elif score <= -5:
-                await ctx.send("**%s**'s post got removed by mods." % message.author.name)
-                await shame.send("**%s**: %s" % (message.author.name, message.content))
-                return
+    @commands.Cog.listener()
+    async def on_reaction_add(self, reaction, user):
+        if reaction.emoji in [self.upvote, self.downvote]:
+            data = getData()
+            fame = discord.utils.get(self.bot.get_guild(677689511525875715).channels, name="hall-of-fame")
+            shame = discord.utils.get(self.bot.get_guild(677689511525875715).channels, name="hall-of-shame")
+            if str(reaction.message.id) in data["message scores"]:
+                num = 0
+                if reaction.emoji == self.upvote:
+                    num = 1
+                    print("%s UPVOTED A MESSAGE." % user.name.upper())
+                else:
+                    num = -1
+                    print("%s DOWNVOTED A MESSAGE." % user.name.upper())
+                data["message scores"][str(reaction.message.id)] += num
+            else:
+                num = 0
+                if reaction.emoji == self.upvote:
+                    num = 1
+                    print("%s UPVOTED A MESSAGE." % user.name.upper())
+                else:
+                    num = -1
+                    print("%s DOWNVOTED A MESSAGE." % user.name.upper())
+                data["message scores"][str(reaction.message.id)] = num
+
+            fame_messages = await discord.utils.get(self.bot.get_guild(677689511525875715).channels, name="hall-of-fame").history(limit=10000).flatten()
+            shame_messages = await discord.utils.get(self.bot.get_guild(677689511525875715).channels, name="hall-of-shame").history(limit=10000).flatten()
+
+            if data["message scores"][str(reaction.message.id)] >= self.threshold and not "**%s**: %s" % (reaction.message.author.name, reaction.message.content) in [message.content for message in fame_messages]:
+                await reaction.message.channel.send("**%s** got reddit gold!" % reaction.message.author.name)
+                await fame.send("**%s**: %s\n%s" % (reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])))
+            elif data["message scores"][str(reaction.message.id)] <= -self.threshold and not "**%s**: %s" % (reaction.message.author.name, reaction.message.content) in [message.content for message in shame_messages]:
+                await reaction.message.channel.send("**%s** posted cringe!" % reaction.message.author.name)
+                await shame.send("**%s**: %s\n%s" % (reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])))
+            else:
+
+                if data["message scores"][str(reaction.message.id)] < self.threshold:
+                    for message in fame_messages:
+                        if "**%s**: %s" % (reaction.message.author.name, reaction.message.content) == message.content:
+                            await message.delete()
+
+                if data["message scores"][str(reaction.message.id)] > -self.threshold:
+                    for message in shame_messages:
+                        if "**%s**: %s" % (reaction.message.author.name, reaction.message.content) == message.content:
+                            await message.delete()
+
+            setData(data)
+
+    @commands.command(brief="Get a random message from either a given channel or the one you send the message in.")
+    async def getmessage(self, ctx, channel: discord.TextChannel = "general"):
+        if channel == "general":
+            channel = discord.utils.get(self.bot.get_guild(677689511525875715).channels, id=677689512004157484)
+        messages = await discord.utils.get(self.bot.get_guild(677689511525875715).channels, id=channel.id).history(limit=10000).flatten()
+        choice = random.choice(messages)
+        await ctx.send("\"%s\"\n-%s" % (choice.content, choice.author.name))
+        print("%s GOT A RANDOM MESSAGE." % ctx.author.name)
 
     @commands.command(brief="Start a poll.")
     async def poll(self, ctx, *, things=""):
