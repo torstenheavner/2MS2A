@@ -51,10 +51,13 @@ class MISC(commands.Cog):
             fame_messages = await discord.utils.get(self.bot.get_guild(677689511525875715).channels, name="hall-of-fame").history(limit=10000).flatten()
             shame_messages = await discord.utils.get(self.bot.get_guild(677689511525875715).channels, name="hall-of-shame").history(limit=10000).flatten()
 
-            if data["message scores"][str(reaction.message.id)] >= self.threshold and not "**%s**: %s" % (reaction.message.author.name, reaction.message.content) in [message.content for message in fame_messages]:
+            if data["message scores"][str(reaction.message.id)] >= self.threshold and not "**%s**: %s" % (reaction.message.author.name, reaction.message.content) in [message.content for message in fame_messages] and not "**%s**: %s\n%s" % (
+            reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])) in [message.content for message in fame_messages]:
                 await reaction.message.channel.send("**%s** got reddit gold!" % reaction.message.author.name)
                 await fame.send("**%s**: %s\n%s" % (reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])))
-            elif data["message scores"][str(reaction.message.id)] <= -self.threshold and not "**%s**: %s" % (reaction.message.author.name, reaction.message.content) in [message.content for message in shame_messages]:
+            elif data["message scores"][str(reaction.message.id)] <= -self.threshold and not "**%s**: %s" % (reaction.message.author.name, reaction.message.content) in [message.content for message in
+                                                                                                                                                                         shame_messages] and not "**%s**: %s\n%s" % (
+            reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])) in [message.content for message in shame_messages]:
                 await reaction.message.channel.send("**%s** posted cringe!" % reaction.message.author.name)
                 await shame.send("**%s**: %s\n%s" % (reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])))
             else:
@@ -99,10 +102,13 @@ class MISC(commands.Cog):
             fame_messages = await discord.utils.get(self.bot.get_guild(677689511525875715).channels, name="hall-of-fame").history(limit=10000).flatten()
             shame_messages = await discord.utils.get(self.bot.get_guild(677689511525875715).channels, name="hall-of-shame").history(limit=10000).flatten()
 
-            if data["message scores"][str(reaction.message.id)] >= self.threshold and not "**%s**: %s" % (reaction.message.author.name, reaction.message.content) in [message.content for message in fame_messages]:
+            if data["message scores"][str(reaction.message.id)] >= self.threshold and not "**%s**: %s" % (reaction.message.author.name, reaction.message.content) in [message.content for message in fame_messages] and not "**%s**: %s\n%s" % (
+            reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])) in [message.content for message in fame_messages]:
                 await reaction.message.channel.send("**%s** got reddit gold!" % reaction.message.author.name)
                 await fame.send("**%s**: %s\n%s" % (reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])))
-            elif data["message scores"][str(reaction.message.id)] <= -self.threshold and not "**%s**: %s" % (reaction.message.author.name, reaction.message.content) in [message.content for message in shame_messages]:
+            elif data["message scores"][str(reaction.message.id)] <= -self.threshold and not "**%s**: %s" % (reaction.message.author.name, reaction.message.content) in [message.content for message in
+                                                                                                                                                                         shame_messages] and not "**%s**: %s\n%s" % (
+            reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])) in [message.content for message in shame_messages]:
                 await reaction.message.channel.send("**%s** posted cringe!" % reaction.message.author.name)
                 await shame.send("**%s**: %s\n%s" % (reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])))
             else:
