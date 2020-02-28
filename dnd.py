@@ -85,12 +85,12 @@ class DND(commands.Cog):
                     roll = randint(1, 20) + bonus
                     if (roll < self.ac or roll - bonus == 1) and roll - bonus != 20:
                         await message.delete()
-                        await message.channel.send("**%s** tried to send a message, but failed the roll!" % message.author.name)
+                        await message.channel.send("(%s) **%s** tried to send a message, but failed the roll!" % (roll, message.author.name))
                         if roll - bonus == 1:
                             await message.channel.send("**%s just nat 1'd!**" % message.author.name)
                     else:
                         await message.delete()
-                        await message.channel.send("**%s**: %s" % (message.author.name, message.content))
+                        await message.channel.send("(%s) **%s**: %s" % (roll, message.author.name, message.content))
                         if roll - bonus == 20:
                             await message.channel.send("**%s just nat 20'd!**" % message.author.name)
                         data["user stats"][message.author.name]["xp"] += self.ac
