@@ -131,7 +131,8 @@ class MISC(commands.Cog):
             channel = discord.utils.get(self.bot.get_guild(677689511525875715).channels, id=677689512004157484)
         messages = await discord.utils.get(self.bot.get_guild(677689511525875715).channels, id=channel.id).history(limit=10000).flatten()
         choice = random.choice(messages)
-        await ctx.send("\"%s\"\n-%s" % (choice.content, choice.author.name))
+        attachments = [attachment.url for attachment in choice.attachments]
+        await ctx.send("\"%s%s\"\n-%s" % (choice.content if len(choice.content) > 0 else "", ("\n" if len(choice.content) > 0 else "" + "\n".join(attachments)) if len(attachments) > 0 else "", choice.author.name))
         print("%s GOT A RANDOM MESSAGE." % ctx.author.name)
 
     @commands.command(brief="Start a poll.")
