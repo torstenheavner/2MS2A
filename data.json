@@ -1,9 +1,9 @@
 {
   "cogs": [
     "colors",
+    "dnd",
     "generativecolors",
-    "misc",
-    "dnd"
+    "misc"
   ],
   "colors": {
     "Toaster": "db460f",
@@ -48,14 +48,26 @@
     "682464693746401326": 3,
     "682575507258343479": -1,
     "682709588314685550": 5,
-    "682712434808717444": 2
+    "682712434808717444": 2,
+    "682819142935379979": 1,
+    "682820971287281687": 2,
+    "682955044844601365": 4,
+    "683457439701401838": 5,
+    "683457705784246296": 4,
+    "683458273713717263": 3,
+    "683884665869828165": 6,
+    "683904138739843082": 2,
+    "684261202016206979": 5,
+    "684393202870255658": 4,
+    "685489133677707302": 5,
+    "685956600439242819": 3
   },
   "banned words": [
     "joe"
   ],
   "user stats": {
     "Toaster": {
-      "xp": 14231,
+      "xp": 19509,
       "level": 6,
       "health": 16,
       "stats": {
@@ -86,7 +98,7 @@
       }
     },
     "JONKKKK": {
-      "xp": 3351,
+      "xp": 4793,
       "level": 4,
       "health": 20,
       "stats": {
@@ -117,7 +129,7 @@
       }
     },
     "GoldenPot8o": {
-      "xp": 3316,
+      "xp": 5053,
       "level": 4,
       "health": 20,
       "stats": {
@@ -148,7 +160,7 @@
       }
     },
     "5a+ch31.exe": {
-      "xp": 1035,
+      "xp": 1146,
       "level": 3,
       "health": 20,
       "stats": {
@@ -179,7 +191,7 @@
       }
     },
     "Alterae": {
-      "xp": 2808,
+      "xp": 3691,
       "level": 4,
       "health": 19,
       "stats": {
@@ -210,7 +222,7 @@
       }
     },
     "Zildin": {
-      "xp": 1364,
+      "xp": 1532,
       "level": 3,
       "health": 20,
       "stats": {
@@ -272,7 +284,7 @@
       }
     },
     "crows": {
-      "xp": 1631,
+      "xp": 1838,
       "level": 3,
       "health": 20,
       "stats": {
@@ -303,7 +315,7 @@
       }
     },
     "Kronkk": {
-      "xp": 522,
+      "xp": 688,
       "level": 2,
       "health": 20,
       "stats": {
@@ -367,35 +379,35 @@
       }
     },
     "VeryWhiteMail": {
-      "xp": 364,
-      "level": 2,
+      "xp": 1156,
+      "level": 3,
       "health": 20,
       "class": "",
       "inventory": [],
       "stats": {
         "str": {
-          "base": 0,
+          "base": 11,
           "mod": 0
         },
         "dex": {
-          "base": 0,
+          "base": 11,
           "mod": 0
         },
         "con": {
-          "base": 0,
-          "mod": 0
+          "base": 12,
+          "mod": 1
         },
         "int": {
-          "base": 0,
-          "mod": 0
+          "base": 9,
+          "mod": -1
         },
         "wis": {
-          "base": 0,
-          "mod": 0
+          "base": 9,
+          "mod": -1
         },
         "cha": {
-          "base": 0,
-          "mod": 0
+          "base": 13,
+          "mod": 1
         }
       }
     },
@@ -433,7 +445,7 @@
       }
     },
     "Blanxy": {
-      "xp": 209,
+      "xp": 256,
       "level": 1,
       "health": 20,
       "class": "",
@@ -565,7 +577,7 @@
       }
     },
     "Spymasterjimmy": {
-      "xp": 197,
+      "xp": 204,
       "level": 1,
       "health": 20,
       "class": "",
@@ -598,9 +610,42 @@
       }
     },
     "failure": {
-      "xp": 285,
-      "level": 1,
+      "xp": 624,
+      "level": 2,
       "health": 19,
+      "class": "",
+      "inventory": [],
+      "stats": {
+        "str": {
+          "base": 0,
+          "mod": 0
+        },
+        "dex": {
+          "base": 0,
+          "mod": 0
+        },
+        "con": {
+          "base": 0,
+          "mod": 0
+        },
+        "int": {
+          "base": 0,
+          "mod": 0
+        },
+        "wis": {
+          "base": 0,
+          "mod": 0
+        },
+        "cha": {
+          "base": 0,
+          "mod": 0
+        }
+      }
+    },
+    "GreyWare": {
+      "xp": 8,
+      "level": 1,
+      "health": 20,
       "class": "",
       "inventory": [],
       "stats": {

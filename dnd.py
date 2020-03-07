@@ -90,7 +90,7 @@ class DND(commands.Cog):
                             await message.channel.send("**%s just nat 1'd!**" % message.author.name)
                     else:
                         await message.delete()
-                        await message.channel.send("(%s) **%s**: %s" % (roll, message.author.name, message.content))
+                        await message.channel.send("(%s) **%s**: %s%s" % (roll, message.author.name, message.content, (("\n" if len(message.content) > 0 else "") + "\n".join([attachment.url for attachment in message.attachments]))))
                         if roll - bonus == 20:
                             await message.channel.send("**%s just nat 20'd!**" % message.author.name)
                         data["user stats"][message.author.name]["xp"] += self.ac

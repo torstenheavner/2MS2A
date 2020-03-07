@@ -1,9 +1,11 @@
+import asyncio as a
 import json
+import operator
 import random
 
 import discord
 import numpy as np
-from discord.ext import tasks, commands
+from discord.ext import commands
 
 
 def getData():
@@ -14,6 +16,20 @@ def getData():
 def setData(_dict):
     with open("data.json", "w") as levelsFile:
         levelsFile.write(json.dumps(_dict, indent=2))
+
+
+async def reminder(ctx, time, type, message):
+    for second in range(time):
+        await a.sleep(1)
+    if type in ["seconds", "second", "sec", "s"]:
+        pass
+    elif type in ["minutes", "minute", "min", "m"]:
+        time /= 60
+    elif type in ["hours", "hour", "hr", "h"]:
+        time /= (60 * 60)
+    elif type in ["days", "day", "d"]:
+        time /= (60 * 60 * 24)
+    await ctx.send("<@%s>\n**%s**\n*(from %s %s ago)*" % (ctx.author.id, message, time, type))
 
 
 class MISC(commands.Cog):
@@ -52,12 +68,12 @@ class MISC(commands.Cog):
             shame_messages = await discord.utils.get(self.bot.get_guild(677689511525875715).channels, name="hall-of-shame").history(limit=10000).flatten()
 
             if data["message scores"][str(reaction.message.id)] >= self.threshold and not "**%s**: %s" % (reaction.message.author.name, reaction.message.content) in [message.content for message in fame_messages] and not "**%s**: %s\n%s" % (
-            reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])) in [message.content for message in fame_messages]:
+                    reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])) in [message.content for message in fame_messages]:
                 await reaction.message.channel.send("**%s** got reddit gold!" % reaction.message.author.name)
                 await fame.send("**%s**: %s\n%s" % (reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])))
             elif data["message scores"][str(reaction.message.id)] <= -self.threshold and not "**%s**: %s" % (reaction.message.author.name, reaction.message.content) in [message.content for message in
                                                                                                                                                                          shame_messages] and not "**%s**: %s\n%s" % (
-            reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])) in [message.content for message in shame_messages]:
+                    reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])) in [message.content for message in shame_messages]:
                 await reaction.message.channel.send("**%s** posted cringe!" % reaction.message.author.name)
                 await shame.send("**%s**: %s\n%s" % (reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])))
             else:
@@ -103,12 +119,12 @@ class MISC(commands.Cog):
             shame_messages = await discord.utils.get(self.bot.get_guild(677689511525875715).channels, name="hall-of-shame").history(limit=10000).flatten()
 
             if data["message scores"][str(reaction.message.id)] >= self.threshold and not "**%s**: %s" % (reaction.message.author.name, reaction.message.content) in [message.content for message in fame_messages] and not "**%s**: %s\n%s" % (
-            reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])) in [message.content for message in fame_messages]:
+                    reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])) in [message.content for message in fame_messages]:
                 await reaction.message.channel.send("**%s** got reddit gold!" % reaction.message.author.name)
                 await fame.send("**%s**: %s\n%s" % (reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])))
             elif data["message scores"][str(reaction.message.id)] <= -self.threshold and not "**%s**: %s" % (reaction.message.author.name, reaction.message.content) in [message.content for message in
                                                                                                                                                                          shame_messages] and not "**%s**: %s\n%s" % (
-            reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])) in [message.content for message in shame_messages]:
+                    reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])) in [message.content for message in shame_messages]:
                 await reaction.message.channel.send("**%s** posted cringe!" % reaction.message.author.name)
                 await shame.send("**%s**: %s\n%s" % (reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])))
             else:
@@ -124,6 +140,50 @@ class MISC(commands.Cog):
                             await message.delete()
 
             setData(data)
+
+    @commands.command(brief="Get the highest upvoted and downvoted messages in the server.")
+    async def highestratings(self, ctx):
+        data = getData()
+        scores = data["message scores"]
+        highest_score = max(scores.values())
+        lowest_score = min(scores.values())
+        highest = max(scores.items(), key=operator.itemgetter(1))[0]
+        lowest = min(scores.items(), key=operator.itemgetter(1))[0]
+        looking_for_highest = True
+        looking_for_lowest = True
+        for channel in self.bot.get_guild(677689511525875715).text_channels:
+            async for message in channel.history(limit=1000):
+                if looking_for_highest:
+                    if message.id in [int(highest), str(highest)]:
+                        highest = message
+                        looking_for_highest = False
+                if looking_for_lowest:
+                    if message.id in [int(lowest), str(lowest)]:
+                        lowest = message
+                        looking_for_lowest = False
+        await ctx.send("__**Highest (+%s)**__\n**%s:** %s%s\n\n__**Lowest (%s)**__\n**%s:** %s%s" % (
+        highest_score, highest.author.name, highest.content, (("\n" if len(highest.content) > 0 else "") + "\n".join([attachment.url for attachment in highest.attachments])), lowest_score, lowest.author.name, lowest.content,
+        (("\n" if len(lowest.content) > 0 else "") + "\n".join([attachment.url for attachment in lowest.attachments]))))
+        print("%s GOT THE HIGHEST AND LOWEST RATED MESSAGES." % ctx.author.name.upper())
+
+    @commands.command(brief="Set a reminder for some time in the future!")
+    async def setreminder(self, ctx, amount_of_time, type_of_time, message):
+        try:
+            the_time = int(amount_of_time)
+        except:
+            return await ctx.send("Please use only integers of time!")
+        if type_of_time in ["seconds", "second", "sec", "s"]:
+            pass
+        elif type_of_time in ["minutes", "minute", "min", "m"]:
+            amount_of_time *= 60
+        elif type_of_time in ["hours", "hour", "hr", "h"]:
+            amount_of_time *= (60 * 60)
+        elif type_of_time in ["days", "day", "d"]:
+            amount_of_time *= (60 * 60 * 24)
+        else:
+            return await ctx.send("That wasn't a valid amount of time!\nPlease only use seconds, minutes, hours, or days.")
+        await ctx.send("Reminder set for %s %s!" % (the_time, type_of_time))
+        await reminder(ctx, amount_of_time, type_of_time, message)
 
     @commands.command(brief="Get a random message from either a given channel or the one you send the message in.")
     async def getmessage(self, ctx, channel: discord.TextChannel = "general"):
