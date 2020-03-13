@@ -215,8 +215,16 @@ class MISC(commands.Cog):
     @commands.command(brief="Get a random XKCD comic.")
     async def xkcd(self, ctx):
         num = random.randint(1, 2277)
+        link = "https://xkcd.com/%s" % num
+        await ctx.send(link)
+        print("%s GOT AN XKCD." % ctx.author.name.upper())
+
+    @commands.command(brief="Get a random XKCD and the relevant SCP.")
+    async def relevantscp(self, ctx):
+        num = random.randint(1, 2277)
         link = ["https://xkcd.com/%s" % num, "http://scp-wiki.wikidot.com/scp-%s" % num]
-        await ctx.send("\n".join(link))
+        await ctx.send("\nRelevant SCP: ".join(link))
+        print("%s GOT AN XKCD AND THE RELEVANT SCP." % ctx.author.name.upper())
 
     @commands.command(brief="Get all the banned words.")
     async def getbanned(self, ctx):
