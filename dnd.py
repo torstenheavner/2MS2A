@@ -81,7 +81,7 @@ class DND(commands.Cog):
 
                 bonus = 2 if level < 5 else (3 if level < 9 else (4 if level < 13 else (5 if level < 17 else 6)))
 
-                if message.channel.name in ["hell", "666"]:
+                if message.channel.id == "680075322884096026":
                     roll = randint(1, 20) + bonus
                     if (roll < self.ac or roll - bonus == 1) and roll - bonus != 20:
                         await message.delete()
@@ -108,7 +108,7 @@ class DND(commands.Cog):
                         words = data["banned words"]
 
                     for word in words:
-                        if word in message.content.lower() and not (message.content.startswith("2m.unban") or message.content.startswith("2m.ban")):
+                        if (((" " + word + " ") in message.content.lower()) or (("*" + word + "*") in message.content.lower()) or (("_" + word + "_") in message.content.lower()) or (message.content.startswith(word + " ")) or (message.content.endswith(" " + word))) and not (message.content.startswith("2m.unban") or message.content.startswith("2m.ban")):
                             data["user stats"][message.author.name]["health"] -= 1
                             await message.channel.send("Uh oh! You fucking idiot. You just said '%s'.\n\nDie." % word)
                             print("%s USED A BANNED WORD." % message.author.name.upper())

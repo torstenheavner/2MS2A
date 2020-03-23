@@ -19,7 +19,7 @@ def setData(_dict):
 
 
 async def reminder(ctx, time, type, message):
-    for second in range(time):
+    for second in range(int(time)):
         await a.sleep(1)
     if type in ["seconds", "second", "sec", "s"]:
         pass
@@ -252,22 +252,32 @@ class MISC(commands.Cog):
             await ctx.send("That word isn't banned!")
 
     @commands.command(brief="Roll a die. (1d6 by default)")
-    async def roll(self, ctx, type="1d6"):
+    async def roll(self, ctx, type="1d20"):
         amount = int(type.split("d")[0])
-        size = int(type.split("d")[1])
+        try:
+            size = int(type.split("d")[1])
+        except ValueError:
+            size = int(type.split("d")[1].split("+")[0])
+        try:
+            mod = int(type.split("+")[1])
+        except IndexError:
+            mod = 0
         results = []
+        realresults = []
         big = False
         total = 0
         out = []
 
         for die in range(amount):
-            roll = random.randint(1, size)
-            results.append(roll)
+            num = random.randint(1, size)
+            roll = num + (mod if num not in [1, 20] else 0)
+            results.append(str(roll) + (" (natural)" if num in [1, 20] else ""))
+            realresults.append(roll)
             total += roll
 
-        out.append("Rolled %sd%s" % (amount, size))
+        out.append("Rolled %sd%s+%s" % (amount, size, mod))
         out.append("Total: %s" % total)
-        out.append("Mean: %s" % np.mean(results))
+        out.append("Mean: %s" % np.mean(realresults))
         out.append("\nAll Rolls:")
 
         if (len("\n".join(out)) + len(", ".join([str(num) for num in results]))) > 2000:
