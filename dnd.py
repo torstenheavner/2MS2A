@@ -64,68 +64,62 @@ class DND(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         if not message.author.bot:
+            # try:
+            data = getData()
+            totalXP = 0
             try:
-                data = getData()
-                totalXP = 0
-                try:
-                    level = data["user stats"][message.author.name]["level"]
-                    num = randint(1, 10)
-                    data["user stats"][message.author.name]["xp"] += num
-                    totalXP += num
-                except:
-                    data["user stats"][message.author.name] = self.base
-                    level = data["user stats"][message.author.name]["level"]
-                    num = randint(1, 10)
-                    data["user stats"][message.author.name]["xp"] += num
-                    totalXP += num
-
-                bonus = 2 if level < 5 else (3 if level < 9 else (4 if level < 13 else (5 if level < 17 else 6)))
-
-                if message.channel.id == "680075322884096026":
-                    roll = randint(1, 20) + bonus
-                    if (roll < self.ac or roll - bonus == 1) and roll - bonus != 20:
-                        await message.delete()
-                        await message.channel.send("(%s) **%s** tried to send a message, but failed the roll!" % (roll, message.author.name))
-                        if roll - bonus == 1:
-                            await message.channel.send("**%s just nat 1'd!**" % message.author.name)
-                    else:
-                        await message.delete()
-                        await message.channel.send("(%s) **%s**: %s%s" % (roll, message.author.name, message.content, (("\n" if len(message.content) > 0 else "") + "\n".join([attachment.url for attachment in message.attachments]))))
-                        if roll - bonus == 20:
-                            await message.channel.send("**%s just nat 20'd!**" % message.author.name)
-                        data["user stats"][message.author.name]["xp"] += self.ac
-                        totalXP += self.ac
-                        if roll - bonus > 10:
-                            num = randint(0, roll)
-                            data["user stats"][message.author.name]["xp"] += num
-                            totalXP += num
-
-                else:
-                    try:
-                        words = data["banned words"]
-                    except:
-                        data["banned words"] = []
-                        words = data["banned words"]
-
-                    for word in words:
-                        if (((" " + word + " ") in message.content.lower()) or (("*" + word + "*") in message.content.lower()) or (("_" + word + "_") in message.content.lower()) or (message.content.startswith(word + " ")) or (message.content.endswith(" " + word))) and not (message.content.startswith("2m.unban") or message.content.startswith("2m.ban")):
-                            data["user stats"][message.author.name]["health"] -= 1
-                            await message.channel.send("Uh oh! You fucking idiot. You just said '%s'.\n\nDie." % word)
-                            print("%s USED A BANNED WORD." % message.author.name.upper())
-
-                    if data["user stats"][message.author.name]["xp"] >= levelxp[level]:
-                        data["user stats"][message.author.name]["level"] += 1
-                        await message.channel.send("**%s** levelled up to level %s!" % (message.author.name, data["user stats"][message.author.name]["level"]))
-                        print("%s LEVELLED UP." % message.author.name.upper())
-
-                    if data["user stats"][message.author.name]["health"] <= 0:
-                        data["user stats"][message.author.name] = self.base
-                        await message.channel.send("Oop, **%s** is dead. Now you gotta reroll stats!" % message.author.name)
-                        print("%s DIED." % message.author.name.upper())
-                setData(data)
-                print("%s GAINED %s XP." % (message.author.name.upper(), totalXP))
+                level = data["user stats"][message.author.name]["level"]
+                num = randint(1, 10)
+                data["user stats"][message.author.name]["xp"] += num
+                totalXP += num
             except:
-                pass
+                data["user stats"][message.author.name] = self.base
+                level = data["user stats"][message.author.name]["level"]
+                num = randint(1, 10)
+                data["user stats"][message.author.name]["xp"] += num
+                totalXP += num
+            bonus = 2 if level < 5 else (3 if level < 9 else (4 if level < 13 else (5 if level < 17 else 6)))
+            if message.channel.id == 680075322884096026:
+                roll = randint(1, 20) + bonus
+                if (roll < self.ac or roll - bonus == 1) and roll - bonus != 20:
+                    await message.delete()
+                    await message.channel.send("(%s) **%s** tried to send a message, but failed the roll!" % (roll, message.author.name))
+                    if roll - bonus == 1:
+                        await message.channel.send("**%s just nat 1'd!**" % message.author.name)
+                else:
+                    await message.delete()
+                    await message.channel.send("(%s) **%s**: %s%s" % (roll, message.author.name, message.content, (("\n" if len(message.content) > 0 else "") + "\n".join([attachment.url for attachment in message.attachments]))))
+                    if roll - bonus == 20:
+                        await message.channel.send("**%s just nat 20'd!**" % message.author.name)
+                    data["user stats"][message.author.name]["xp"] += self.ac
+                    totalXP += self.ac
+                    if roll - bonus > 10:
+                        num = randint(0, roll)
+                        data["user stats"][message.author.name]["xp"] += num
+                        totalXP += num
+            else:
+                try:
+                    words = data["banned words"]
+                except:
+                    data["banned words"] = []
+                    words = data["banned words"]
+                for word in words:
+                    if (((" " + word + " ") in message.content.lower()) or (("*" + word + "*") in message.content.lower()) or (("_" + word + "_") in message.content.lower()) or (message.content.startswith(word + " ")) or (message.content.endswith(" " + word))) and not (message.content.startswith("2m.unban") or message.content.startswith("2m.ban")):
+                        data["user stats"][message.author.name]["health"] -= 1
+                        await message.channel.send("Uh oh! You fucking idiot. You just said '%s'.\n\nDie." % word)
+                        print("%s USED A BANNED WORD." % message.author.name.upper())
+                if data["user stats"][message.author.name]["xp"] >= levelxp[level]:
+                    data["user stats"][message.author.name]["level"] += 1
+                    await message.channel.send("**%s** levelled up to level %s!" % (message.author.name, data["user stats"][message.author.name]["level"]))
+                    print("%s LEVELLED UP." % message.author.name.upper())
+                if data["user stats"][message.author.name]["health"] <= 0:
+                    data["user stats"][message.author.name] = self.base
+                    await message.channel.send("Oop, **%s** is dead. Now you gotta reroll stats!" % message.author.name)
+                    print("%s DIED." % message.author.name.upper())
+            setData(data)
+            print("%s GAINED %s XP." % (message.author.name.upper(), totalXP))
+            # except:
+            #     pass
 
     @tasks.loop(minutes=5)
     async def hell_ac(self):

@@ -27,7 +27,7 @@ class ESIX(commands.Cog):
                 shutil.copyfileobj(resp.raw, file)
                 files.append("%sesix%s.jpg" % ("SPOILER_" if "rating:s" not in tags else "", i))
         await ctx.send(files=[discord.File("images/%s" % image) for image in files])
-        print("%S GOT AN IMAGE FROM E6." % ctx.author.name.upper())
+        print("%s GOT AN IMAGE FROM E6." % ctx.author.name.upper())
 
     @commands.command(brief=";) (but bully people)")
     async def yiff(self, ctx, person: discord.Member, message="", *, tags="rating:s"):

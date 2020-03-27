@@ -1,11 +1,11 @@
 import asyncio as a
 import json
 import operator
-import random
+from random import *
 
 import discord
 import numpy as np
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 
 def getData():
@@ -38,6 +38,10 @@ class MISC(commands.Cog):
         self.upvote = "⬆️"
         self.downvote = "⬇️"
         self.threshold = 4
+        self.gay.start()
+
+    def cog_unload(self):
+        self.gay.cancel()
 
     @commands.Cog.listener()
     async def on_reaction_remove(self, reaction, user):
@@ -141,6 +145,36 @@ class MISC(commands.Cog):
 
             setData(data)
 
+    @tasks.loop(seconds=1)
+    async def gay(self):
+        num = randint(1, 1000000)
+        if num == 1:
+            general = discord.utils.get(self.bot.get_guild(677689511525875715).channels, id=677689512004157484)
+            if randint(1, 2) == 1:
+                user = discord.utils.get(self.bot.get_guild(677689511525875715).members, id=289896214810329088)
+            else:
+                if randint(1, 100) == 1:
+                    users = []
+                    for member in self.bot.get_guild(677689511525875715).members:
+                        for role in member.roles:
+                            if role.id == 677701185775337512:
+                                users.append("<@%s>" % member.id)
+                    await general.send(",\n".join(users) + ", your moms are all fuckin gay lul")
+                else:
+                    user = choice(self.bot.get_guild(677689511525875715).members)
+                    await general.send("<@%s>'s mom is fuckin gay as hell" % user.id)
+
+    @commands.command(brief="Get a square of random binary.")
+    async def binary(self, ctx, height: int = 10, width: int = 0):
+        out = []
+        if width == 0:
+            width = height*3
+        for i in range(height):
+            out.append("".join([choice(["0", "1"]) for i in range(width)]))
+        # embed = discord.Embed(title="Binary", description="\n".join(out), color=0x7289DA)
+        # await ctx.send(embed=embed)
+        await ctx.send("Characters: %s\n```%s```" % (str(height*width), ("\n".join(out) if len("\n".join(out)) <= (2000-16) else "Too big to display!")))
+
     @commands.command(brief="Get the highest upvoted and downvoted messages in the server.")
     async def highestratings(self, ctx):
         data = getData()
@@ -162,8 +196,8 @@ class MISC(commands.Cog):
                         lowest = message
                         looking_for_lowest = False
         await ctx.send("__**Highest (+%s)**__\n**%s:** %s%s\n\n__**Lowest (%s)**__\n**%s:** %s%s" % (
-        highest_score, highest.author.name, highest.content, (("\n" if len(highest.content) > 0 else "") + "\n".join([attachment.url for attachment in highest.attachments])), lowest_score, lowest.author.name, lowest.content,
-        (("\n" if len(lowest.content) > 0 else "") + "\n".join([attachment.url for attachment in lowest.attachments]))))
+            highest_score, highest.author.name, highest.content, (("\n" if len(highest.content) > 0 else "") + "\n".join([attachment.url for attachment in highest.attachments])), lowest_score, lowest.author.name, lowest.content,
+            (("\n" if len(lowest.content) > 0 else "") + "\n".join([attachment.url for attachment in lowest.attachments]))))
         print("%s GOT THE HIGHEST AND LOWEST RATED MESSAGES." % ctx.author.name.upper())
 
     @commands.command(brief="Set a reminder for some time in the future!")
@@ -190,9 +224,9 @@ class MISC(commands.Cog):
         if channel == "general":
             channel = discord.utils.get(self.bot.get_guild(677689511525875715).channels, id=677689512004157484)
         messages = await discord.utils.get(self.bot.get_guild(677689511525875715).channels, id=channel.id).history(limit=10000).flatten()
-        choice = random.choice(messages)
-        attachments = [attachment.url for attachment in choice.attachments]
-        await ctx.send("\"%s%s\"\n-%s" % (choice.content if len(choice.content) > 0 else "", ("\n" if len(choice.content) > 0 else "" + "\n".join(attachments)) if len(attachments) > 0 else "", choice.author.name))
+        _choice = choice(messages)
+        attachments = [attachment.url for attachment in _choice.attachments]
+        await ctx.send("\"%s%s\"\n-%s" % (_choice.content if len(_choice.content) > 0 else "", ("\n" if len(_choice.content) > 0 else "" + "\n".join(attachments)) if len(attachments) > 0 else "", _choice.author.name))
         print("%s GOT A RANDOM MESSAGE." % ctx.author.name)
 
     @commands.command(brief="Start a poll.")
@@ -214,14 +248,14 @@ class MISC(commands.Cog):
 
     @commands.command(brief="Get a random XKCD comic.")
     async def xkcd(self, ctx):
-        num = random.randint(1, 2277)
+        num = randint(1, 2277)
         link = "https://xkcd.com/%s" % num
         await ctx.send(link)
         print("%s GOT AN XKCD." % ctx.author.name.upper())
 
     @commands.command(brief="Get a random XKCD and the relevant SCP.")
     async def relevantscp(self, ctx):
-        num = random.randint(1, 2277)
+        num = randint(1, 2277)
         link = ["https://xkcd.com/%s" % num, "http://scp-wiki.wikidot.com/scp-%s" % num]
         await ctx.send("\nRelevant SCP: ".join(link))
         print("%s GOT AN XKCD AND THE RELEVANT SCP." % ctx.author.name.upper())
@@ -269,7 +303,7 @@ class MISC(commands.Cog):
         out = []
 
         for die in range(amount):
-            num = random.randint(1, size)
+            num = randint(1, size)
             roll = num + (mod if num not in [1, 20] else 0)
             results.append(str(roll) + (" (natural)" if num in [1, 20] else ""))
             realresults.append(roll)
