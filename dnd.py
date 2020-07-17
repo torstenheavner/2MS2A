@@ -83,12 +83,13 @@ class DND(commands.Cog):
                 roll = randint(1, 20) + bonus
                 if (roll < self.ac or roll - bonus == 1) and roll - bonus != 20:
                     await message.delete()
-                    await message.channel.send("(%s) **%s** tried to send a message, but failed the roll!" % (roll, message.author.name))
-                    if roll - bonus == 1:
-                        await message.channel.send("**%s just nat 1'd!**" % message.author.name)
+                    # await message.channel.send("(%s) **%s** tried to send a message, but failed the roll!" % (roll, message.author.name))
+                    await message.channel.send("**%s** failed the roll! - They rolled a %s (%s+%s)" % (message.author.name, roll, roll-bonus, bonus))
+                    # if roll - bonus == 1:
+                    #     await message.channel.send("**%s just nat 1'd!**" % message.author.name)
                 else:
-                    await message.delete()
-                    await message.channel.send("(%s) **%s**: %s%s" % (roll, message.author.name, message.content, (("\n" if len(message.content) > 0 else "") + "\n".join([attachment.url for attachment in message.attachments]))))
+                    # await message.delete()
+                    # await message.channel.send("(%s) **%s**: %s%s" % (roll, message.author.name, message.content, (("\n" if len(message.content) > 0 else "") + "\n".join([attachment.url for attachment in message.attachments]))))
                     if roll - bonus == 20:
                         await message.channel.send("**%s just nat 20'd!**" % message.author.name)
                     data["user stats"][message.author.name]["xp"] += self.ac
@@ -146,8 +147,30 @@ class DND(commands.Cog):
         await ctx.send("\n".join(final))
         print("%s GOT THE XP LEADERBOARD." % ctx.author.name.upper())
 
-    @commands.command(brief="Roll up your stats.")
+    @commands.command(brief="Roll up stats for use with a dnd character")
     async def rollstats(self, ctx, *, order):
+        order = order.split(" ")
+        for item in order:
+            if item not in ["str", "dex", "con", "int", "wis", "cha"]:
+                return await ctx.send("Please use the correct stat names!\nThey are:\n%s" % ("\n".join(["str", "dex", "con", "int", "wis", "cha"])))
+        final = []
+        allrolls = []
+        for i in range(6):
+            allrolls.append([randint(1, 6) for x in range(4)])
+        for arr in range(len(allrolls)):
+            del allrolls[arr][allrolls[arr].index(min(allrolls[arr]))]
+            allrolls[arr] = sum(allrolls[arr])
+        allrolls.sort(reverse=True)
+        for i in range(6):
+            num = allrolls[i]
+            tempnum = allrolls[i]
+            if tempnum % 2 == 1:
+                tempnum -= 1
+            final.append("%s -> %s (%s)" % (order[i], num, self.bonuses[tempnum] if num < 10 else ("+%s" % self.bonuses[tempnum])))
+        await ctx.send("\n".join(final))
+
+    @commands.command(brief="Roll up your stats.")
+    async def rollrealstats(self, ctx, *, order):
         data = getData()
         try:
             if not (0 in (data["user stats"][ctx.author.name]["stats"][key]["base"] for key in data["user stats"][ctx.author.name]["stats"])):

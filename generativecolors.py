@@ -2,6 +2,7 @@ import asyncio as a
 import json
 from random import randint
 
+import numpy as np
 import discord
 from PIL import Image, ImageDraw
 from discord.ext import commands
@@ -37,17 +38,18 @@ class Generative_Colors(commands.Cog):
 
     async def dochecks(self, message, color):
         for i in range(10):
-            score = 0
+            scores = []
             cache = discord.utils.get(self.bot.cached_messages, id=message.id)
 
             for reaction in cache.reactions:
-                score += (self.emojis[reaction.emoji] * (reaction.count - 1))
+                for x in range(reaction.count - 1):
+                    scores.append(self.emojis[reaction.emoji])
 
-            await message.edit(content="__**#%s**__\n*SCORE: %s*\n*TIME: %s*" % (color, score, 20 - (i * 2)))
+            await message.edit(content="__**#%s**__\n*SCORE: %s*\n*TIME: %s*" % (color, np.mean(scores), 20 - (i * 2)))
             await a.sleep(2)
 
         rgb = self.hexToRGB(color)
-        await message.edit(content="__**#%s**__\n*SCORE: %s*" % (color, score))
+        await message.edit(content="__**#%s**__\n*SCORE: %s*" % (color, np.mean(scores)))
 
     @commands.command(brief="Generate a color.")
     async def makecolor(self, ctx, ratings: bool = True):

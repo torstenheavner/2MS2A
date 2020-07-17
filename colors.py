@@ -27,20 +27,33 @@ class Colors(commands.Cog):
     async def colors(self, ctx, font="minecraft"):
         ourColors = getData()["colors"]
 
-        font = ImageFont.truetype("fonts/%s.ttf" % font, 48)
+        font1 = ImageFont.truetype("fonts/%s.ttf" % font, 48)
+        font2 = ImageFont.truetype("fonts/%s.ttf" % font, 24)
 
-        w, h = 500, 100
+        w, h = 350, 100
         color = (255, 255, 255)
         for person in ourColors:
-            darker = [i - 120 for i in self.hexToRGB(ourColors[person])]
+            lighter = [i + 120 for i in self.hexToRGB(ourColors[person])]
+            lighter2 = [i + 60 for i in self.hexToRGB(ourColors[person])]
+            darker = [i - 60 for i in self.hexToRGB(ourColors[person])]
+            darker2 = [i - 120 for i in self.hexToRGB(ourColors[person])]
             for i in range(len(darker)):
+                if lighter[i] > 255:
+                    lighter[i] = 255
+                if lighter2[i] > 255:
+                    lighter2[i] = 255
                 if darker[i] < 0:
                     darker[i] = 0
+                if darker2[i] < 0:
+                    darker2[i] = 0
             img = Image.new("RGB", (w, h), color=self.hexToRGB(ourColors[person]))
             draw = ImageDraw.Draw(img)
-            draw.text((9, 6), "%s\n#%s" % (person, ourColors[person]), tuple([i - 120 for i in self.hexToRGB(ourColors[person])]), font=font)
-            draw.text((5, 2), "%s\n#%s" % (person, ourColors[person]), color, font=font)
-            draw.text((250, 2), "\n#%02x%02x%02x" % tuple(darker), tuple([i - 120 for i in self.hexToRGB(ourColors[person])]), font=font)
+            draw.text((9, 6), "%s\n#%s" % (person, ourColors[person]), tuple([i - 120 for i in self.hexToRGB(ourColors[person])]), font=font1)
+            draw.text((5, 2), "%s\n#%s" % (person, ourColors[person]), color, font=font1)
+            draw.text((250, 6), "#%02x%02x%02x" % tuple(lighter), tuple([i + 120 for i in self.hexToRGB(ourColors[person])]), font=font2)
+            draw.text((250, 6), "\n#%02x%02x%02x" % tuple(lighter2), tuple([i + 60 for i in self.hexToRGB(ourColors[person])]), font=font2)
+            draw.text((250, 6), "\n\n#%02x%02x%02x" % tuple(darker), tuple([i - 60 for i in self.hexToRGB(ourColors[person])]), font=font2)
+            draw.text((250, 2), "\n\n\n#%02x%02x%02x" % tuple(darker2), tuple([i - 120 for i in self.hexToRGB(ourColors[person])]), font=font2)
             img.save("colors/%s.png" % person)
 
         files = [discord.File("colors/%s.png" % person) for person in ourColors]
@@ -89,10 +102,29 @@ class Colors(commands.Cog):
 
     @commands.command(brief="Test a hexadecimal color.")
     async def testcolor(self, ctx, color):
-        w, h = 100, 100
+        w, h = 255, 115
+        font1 = ImageFont.truetype("fonts/roboto.ttf", 24)
         img = Image.new("RGB", (w, h), color=self.hexToRGB(color))
         draw = ImageDraw.Draw(img)
-        draw.text((5, 2), "#%s" % color, (255, 255, 255))
+        lighter = [i + 120 for i in self.hexToRGB(color)]
+        lighter2 = [i + 60 for i in self.hexToRGB(color)]
+        darker = [i - 60 for i in self.hexToRGB(color)]
+        darker2 = [i - 120 for i in self.hexToRGB(color)]
+        for i in range(len(darker)):
+            if lighter[i] > 255:
+                lighter[i] = 255
+            if lighter2[i] > 255:
+                lighter2[i] = 255
+            if darker[i] < 0:
+                darker[i] = 0
+            if darker2[i] < 0:
+                darker2[i] = 0
+        draw.text((7, 4), ("#%s" % color).upper(), tuple(darker2), font=font1)
+        draw.text((5, 2), ("#%s" % color).upper(), (255, 255, 255), font=font1)
+        draw.text((150, 6), ("#%02x%02x%02x" % tuple(lighter)).upper(), tuple(lighter), font=font1)
+        draw.text((150, 6), ("\n#%02x%02x%02x" % tuple(lighter2)).upper(), tuple(lighter2), font=font1)
+        draw.text((150, 6), ("\n\n#%02x%02x%02x" % tuple(darker)).upper(), tuple(darker), font=font1)
+        draw.text((150, 2), ("\n\n\n#%02x%02x%02x" % tuple(darker2)).upper(), tuple(darker2), font=font1)
         img.save("colors/test.png")
 
         await ctx.send(file=discord.File("colors/test.png"))
@@ -100,7 +132,7 @@ class Colors(commands.Cog):
 
     @commands.command(brief="Get a list of all fonts.")
     async def fonts(self, ctx):
-        await ctx.send("**All fonts:**\ncarter\nchewy\nknewave\nminecraft (default)\ntrade")
+        await ctx.send("**All fonts:**\ncarter\nchewy\nknewave\nminecraft (default)\nroboto (also sometimes default)\ntrade")
         print("%s GOT ALL FONTS." % ctx.author.name.upper())
 
     @commands.command(brief="Get a sample subtitle using some color.")

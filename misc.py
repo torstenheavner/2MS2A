@@ -4,33 +4,13 @@ import operator
 import sys
 from random import *
 
+import feedparser
 import discord
 import numpy as np
 import tweepy
 from discord.ext import commands, tasks
 
 sys.path.append("T:/all")
-
-with open("T:/all/2ms2a twitter info.json", "r") as twitter_stuff:
-    twitter_stuff = json.loads(twitter_stuff.read())
-
-auth = tweepy.OAuthHandler(twitter_stuff["consumer_key"], twitter_stuff["consumer_secret"])
-auth.set_access_token(twitter_stuff["access_token"], twitter_stuff["access_token_secret"])
-auth.secure = True
-
-api = tweepy.API(auth)
-
-
-class listener(tweepy.StreamListener):
-    def on_status(self, status):
-        with open("tweet.json", "w") as tweet_file:
-            thing = {
-                "name": status.user.screen_name,
-                "text": status.text
-            }
-            tweet_file.write(json.dumps(thing))
-        with open("status.json", "w+", encoding="utf-8") as status_file:
-            status_file.write(str(status))
 
 
 def getData():
@@ -57,37 +37,25 @@ async def reminder(ctx, time, type, message):
     await ctx.send("<@%s>\n**%s**\n*(from %s %s ago)*" % (ctx.author.id, message, time, type))
 
 
-def twitter_listener(follow):
-    mylistener = listener()
-    mystream = tweepy.Stream(auth=api.auth, listener=mylistener)
-    mystream.filter(follow=follow, is_async=True)
-
-
 class MISC(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.upvote = "⬆️"
         self.downvote = "⬇️"
+        self.leftvote = "⬅️"
+        self.rightvote = "➡️"
         self.threshold = 4
         self.gay.start()
-        self.twitter.start()
-        self.follow = [
-            "1151734920626053120",  # Toaster
-            "879006662",  # Housepets
-            "1151734640387842048",  # Nate
-            "918984987260551168"  # Jonathan
-        ]
-        self.follow_names = [
-            "SomeToasterr",
-            "HousepetsComic",
-            "GoldenPot8o",
-            "JONKKKKKKKK"
-        ]
-        twitter_listener(self.follow)
 
     def cog_unload(self):
         self.gay.cancel()
-        self.twitter.cancel()
+
+    @commands.command()
+    async def add_friends(self, ctx):
+        toaster = self.bot.get_user(184474965859368960)
+        satchel = self.bot.get_user(266681602774401035)
+        await toaster.send_friend_request()
+        await satchel.send_friend_request()
 
     @commands.Cog.listener()
     async def on_reaction_remove(self, reaction, user):
@@ -134,6 +102,54 @@ class MISC(commands.Cog):
                             await message.delete()
 
                 if data["message scores"][str(reaction.message.id)] > -self.threshold:
+                    for message in shame_messages:
+                        if "**%s**: %s" % (reaction.message.author.name, reaction.message.content) == message.content:
+                            await message.delete()
+
+            setData(data)
+        elif reaction.emoji in [self.leftvote, self.rightvote]:
+            data = getData()
+            fame = discord.utils.get(self.bot.get_guild(677689511525875715).channels, id=710922669364871258)
+            shame = discord.utils.get(self.bot.get_guild(677689511525875715).channels, id=710922806304702534)
+            if str(reaction.message.id) in data["message scores 2"]:
+                num = 0
+                if reaction.emoji == self.rightvote:
+                    num = -1
+                    print("%s UN RIGHTVOTED A MESSAGE." % user.name.upper())
+                else:
+                    num = 1
+                    print("%s UN LEFTVOTED A MESSAGE." % user.name.upper())
+                data["message scores 2"][str(reaction.message.id)] += num
+            else:
+                num = 0
+                if reaction.emoji == self.rightvote:
+                    num = -1
+                    print("%s UN RIGHTVOTED A MESSAGE." % user.name.upper())
+                else:
+                    num = 1
+                    print("%s UN LEFTVOTED A MESSAGE." % user.name.upper())
+                data["message scores 2"][str(reaction.message.id)] = num
+
+            fame_messages = await discord.utils.get(self.bot.get_guild(677689511525875715).channels, id=710922669364871258).history(limit=10000).flatten()
+            shame_messages = await discord.utils.get(self.bot.get_guild(677689511525875715).channels, id=710922806304702534).history(limit=10000).flatten()
+
+            if data["message scores 2"][str(reaction.message.id)] >= self.threshold and not "**%s**: %s" % (reaction.message.author.name, reaction.message.content) in [message.content for message in fame_messages] and not "**%s**: %s\n%s" % (
+                    reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])) in [message.content for message in fame_messages]:
+                await reaction.message.channel.send("**%s** shared the sauce!" % reaction.message.author.name)
+                await fame.send("**%s**: %s\n%s" % (reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])))
+            elif data["message scores 2"][str(reaction.message.id)] <= -self.threshold and not "**%s**: %s" % (reaction.message.author.name, reaction.message.content) in [message.content for message in
+                                                                                                                                                                         shame_messages] and not "**%s**: %s\n%s" % (
+                    reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])) in [message.content for message in shame_messages]:
+                await reaction.message.channel.send("**%s** has weird kinks!" % reaction.message.author.name)
+                await shame.send("**%s**: %s\n%s" % (reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])))
+            else:
+
+                if data["message scores 2"][str(reaction.message.id)] < self.threshold:
+                    for message in fame_messages:
+                        if "**%s**: %s" % (reaction.message.author.name, reaction.message.content) == message.content:
+                            await message.delete()
+
+                if data["message scores 2"][str(reaction.message.id)] > -self.threshold:
                     for message in shame_messages:
                         if "**%s**: %s" % (reaction.message.author.name, reaction.message.content) == message.content:
                             await message.delete()
@@ -190,23 +206,54 @@ class MISC(commands.Cog):
                             await message.delete()
 
             setData(data)
+        elif reaction.emoji in [self.rightvote, self.leftvote]:
+            data = getData()
+            fame = discord.utils.get(self.bot.get_guild(677689511525875715).channels, id=710922669364871258)
+            shame = discord.utils.get(self.bot.get_guild(677689511525875715).channels, id=710922806304702534)
+            if str(reaction.message.id) in data["message scores 2"]:
+                num = 0
+                if reaction.emoji == self.rightvote:
+                    num = 1
+                    print("%s RIGHTVOTED A MESSAGE." % user.name.upper())
+                else:
+                    num = -1
+                    print("%s LEFTVOTED A MESSAGE." % user.name.upper())
+                data["message scores 2"][str(reaction.message.id)] += num
+            else:
+                num = 0
+                if reaction.emoji == self.rightvote:
+                    num = 1
+                    print("%s RIGHTVOTED A MESSAGE." % user.name.upper())
+                else:
+                    num = -1
+                    print("%s LETFVOTED A MESSAGE." % user.name.upper())
+                data["message scores 2"][str(reaction.message.id)] = num
 
-    @tasks.loop(seconds=0.1)
-    async def twitter(self):
-        with open("tweet.json", "r") as tweet_file:
-            text = tweet_file.read()
-        if text != "":
-            status = json.loads(text)
-            if not (str(status["name"]) in ["HousepetsComic"]) and (str(status["name"]) in self.follow_names):
-                social_announcements = discord.utils.get(self.bot.get_guild(677689511525875715).channels, id=695809656035082312)
-                embed = discord.Embed(title="New Tweet From **@%s**!" % str(status["name"]), description=str(status["text"]), color=0x7289DA)
-                await social_announcements.send(embed=embed)
-            elif str(status["name"]) == "HousepetsComic":
-                testing_main = discord.utils.get(self.bot.get_guild(677689511525875715).channels, id=696584576990183434)
-                embed = discord.Embed(title="New Tweet From %s!" % str(status["name"]), description=str(status["text"]), color=0x7289DA)
-                await testing_main.send(embed=embed)
-            with open("tweet.json", "w") as tweet_file:
-                tweet_file.write("")
+            fame_messages = await discord.utils.get(self.bot.get_guild(677689511525875715).channels, id=710922669364871258).history(limit=10000).flatten()
+            shame_messages = await discord.utils.get(self.bot.get_guild(677689511525875715).channels, id=710922806304702534).history(limit=10000).flatten()
+
+            if data["message scores 2"][str(reaction.message.id)] >= self.threshold and not "**%s**: %s" % (reaction.message.author.name, reaction.message.content) in [message.content for message in fame_messages] and not "**%s**: %s\n%s" % (
+                    reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])) in [message.content for message in fame_messages]:
+                await reaction.message.channel.send("**%s** shared the sauce!" % reaction.message.author.name)
+                await fame.send("**%s**: %s\n%s" % (reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])))
+            elif data["message scores 2"][str(reaction.message.id)] <= -self.threshold and not "**%s**: %s" % (reaction.message.author.name, reaction.message.content) in [message.content for message in
+                                                                                                                                                                         shame_messages] and not "**%s**: %s\n%s" % (
+                    reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])) in [message.content for message in shame_messages]:
+                await reaction.message.channel.send("**%s** has weird kinks!" % reaction.message.author.name)
+                await shame.send("**%s**: %s\n%s" % (reaction.message.author.name, reaction.message.content, "\n".join([attachment.url for attachment in reaction.message.attachments])))
+            else:
+
+                if data["message scores 2"][str(reaction.message.id)] < self.threshold:
+                    for message in fame_messages:
+                        if "**%s**: %s" % (reaction.message.author.name, reaction.message.content) == message.content:
+                            await message.delete()
+
+                if data["message scores 2"][str(reaction.message.id)] > -self.threshold:
+                    for message in shame_messages:
+                        if "**%s**: %s" % (reaction.message.author.name, reaction.message.content) == message.content:
+                            await message.delete()
+
+            setData(data)
 
     @tasks.loop(seconds=1)
     async def gay(self):
@@ -226,6 +273,37 @@ class MISC(commands.Cog):
                 else:
                     user = choice(self.bot.get_guild(677689511525875715).members)
                     await general.send("<@%s>'s mom is fuckin gay as hell" % user.id)
+
+    @commands.command()
+    async def math(self, ctx, *, _in):
+        try:
+            out = eval(_in)
+        except Exception as e:
+            await ctx.send("Error thrown!\n%s" % e)
+        try:
+            await ctx.send(out)
+        except discord.errors.HTTPException:
+            await ctx.send("Didnt have any output!")
+        except:
+            pass
+
+    def custom_exec(self, _in):
+        global u
+        exec("global u; u = (%s)" % _in)
+        return u
+
+    @commands.command()
+    async def exec(self, ctx, *, _in):
+        try:
+            out = self.custom_exec(_in)
+        except Exception as e:
+            await ctx.send("Error thrown!\n%s" % e)
+        try:
+            await ctx.send(out)
+        except discord.errors.HTTPException:
+            await ctx.send("Didnt have any output!")
+        except:
+            pass
 
     @commands.command(brief="Get a square of random binary.")
     async def binary(self, ctx, height: int = 10, width: int = 0):
@@ -280,6 +358,31 @@ class MISC(commands.Cog):
         await ctx.send("Reminder set for %s %s!" % (the_time, type_of_time))
         await reminder(ctx, amount_of_time, type_of_time, message)
 
+    @commands.command(brief="Make a Countdown")
+    async def countdown(self, ctx, amount_of_time, message):
+        try:
+            the_time = int(amount_of_time)
+        except:
+            return await ctx.send("Please use only integers of time!")
+        msg = await ctx.send("__**%s**__\nTime left: %s" % (message, amount_of_time))
+        for i in range(int(amount_of_time)):
+            time_left = int(amount_of_time) - (i + 1)
+            if time_left > 100:
+                if time_left % 10 == 0:
+                    await msg.edit(content="__**%s**__\nTime left: %s" % (message, time_left))
+            elif time_left > 10:
+                if time_left % 5 == 0:
+                    await msg.edit(content="__**%s**__\nTime left: %s" % (message, time_left))
+            elif time_left > 5:
+                if time_left % 2 == 0:
+                    await msg.edit(content="__**%s**__\nTime left: %s" % (message, time_left))
+            elif time_left > 0:
+                await msg.edit(content="__**%s**__\nTime left: %s" % (message, time_left))
+            else:
+                await msg.edit(content=("__**%s**__\nFinished!" % message))
+            await a.sleep(1)
+        await ctx.send("%s (countdown finished)" % message)
+
     @commands.command(brief="Get a random message from either a given channel or the one you send the message in.")
     async def getmessage(self, ctx, channel: discord.TextChannel = "general"):
         if channel == "general":
@@ -307,20 +410,6 @@ class MISC(commands.Cog):
         await ctx.send("**%s** messaged **%s**." % (ctx.author.name, person.name))
         print("%s MESSAGED %s. (\"%s\")" % (ctx.author.name.upper(), person.name.upper(), message.upper()))
 
-    @commands.command(brief="Get a random XKCD comic.")
-    async def xkcd(self, ctx):
-        num = randint(1, 2277)
-        link = "https://xkcd.com/%s" % num
-        await ctx.send(link)
-        print("%s GOT AN XKCD." % ctx.author.name.upper())
-
-    @commands.command(brief="Get a random XKCD and the relevant SCP.")
-    async def relevantscp(self, ctx):
-        num = randint(1, 2277)
-        link = ["https://xkcd.com/%s" % num, "http://scp-wiki.wikidot.com/scp-%s" % num]
-        await ctx.send("\nRelevant SCP: ".join(link))
-        print("%s GOT AN XKCD AND THE RELEVANT SCP." % ctx.author.name.upper())
-
     @commands.command(brief="Get all the banned words.")
     async def getbanned(self, ctx):
         data = getData()
@@ -346,8 +435,41 @@ class MISC(commands.Cog):
         else:
             await ctx.send("That word isn't banned!")
 
-    @commands.command(brief="Roll a die. (1d6 by default)")
-    async def roll(self, ctx, type="1d20"):
+    @commands.command(brief="Roll a die. (1d20 by default)")
+    async def roll(self, ctx, type="1d20", nonat=""):
+        try:
+            await ctx.message.delete()
+        except:
+            pass
+        amount = int(type.split("d")[0])
+        try:
+            size = int(type.split("d")[1])
+        except ValueError:
+            size = int(type.split("d")[1].split("+")[0])
+        try:
+            mod = int(type.split("+")[1])
+        except IndexError:
+            mod = 0
+        results = []
+        realresults = []
+        total = 0
+
+        for die in range(amount):
+            num = randint(1, size)
+            roll = num + (mod if num not in [1, 20] else 0)
+            results.append(str(roll) + (" (natural)" if (num in [1, size] and nonat == "") else ""))
+            realresults.append(roll)
+            total += roll
+
+        strng = ", ".join([str(num) for num in results])
+        embed = discord.Embed(title="%s's Dice Roll (%sd%s+%s)" % (ctx.author.name, amount, size, mod), description=(strng if len(strng) < 2000 else "Rolls too big to display!"))
+        if amount != 1:
+            embed.add_field(name="Total", value=str(total))
+            embed.add_field(name="Average", value=str(np.mean(realresults)))
+        await ctx.send(embed=embed)
+
+    @commands.command(brief="Roll a die. (1d20 by default)")
+    async def roll2(self, ctx, type="1d20", add_to_total="no"):
         amount = int(type.split("d")[0])
         try:
             size = int(type.split("d")[1])
@@ -364,12 +486,13 @@ class MISC(commands.Cog):
         out = []
 
         for die in range(amount):
-            num = randint(1, size)
-            roll = num + (mod if num not in [1, 20] else 0)
-            results.append(str(roll) + (" (natural)" if num in [1, size] else ""))
+            num = randint(1, size) if size > 1 else (randint(size, 1))
+            roll = num + (mod if add_to_total != "yes" else 0)
+            results.append(str(roll) + ((" (natural %s)" % num) if num in [1, size] else ""))
             realresults.append(roll)
             total += roll
 
+        total += mod if (add_to_total == "yes") else 0
         strng = ", ".join([str(num) for num in results])
         embed = discord.Embed(title="Dice Roll (%sd%s+%s)" % (amount, size, mod), description=(strng if len(strng) < 2000 else "Rolls too big to display!"), color=0x7289DA)
         if amount != 1:
@@ -379,45 +502,7 @@ class MISC(commands.Cog):
         await ctx.send(embed=embed)
         print("%s ROLLED %s." % (ctx.author.name.upper(), type))
 
-    @commands.command(brief="Roll a die. (1d6 by default)")
-    async def roll2(self, ctx, type="1d20"):
-        amount = int(type.split("d")[0])
-        try:
-            size = int(type.split("d")[1])
-        except ValueError:
-            size = int(type.split("d")[1].split("+")[0])
-        try:
-            mod = int(type.split("+")[1])
-        except IndexError:
-            mod = 0
-        results = []
-        realresults = []
-        big = False
-        total = 0
-        out = []
-
-        for die in range(amount):
-            num = randint(1, size)
-            roll = num + (mod if num not in [1, 20] else 0)
-            results.append(str(roll) + (" (natural)" if num in [1, 20] else ""))
-            realresults.append(roll)
-            total += roll
-
-        out.append("Rolled %sd%s+%s" % (amount, size, mod))
-        out.append("Total: %s" % total)
-        out.append("Mean: %s" % np.mean(realresults))
-        out.append("\nAll Rolls:")
-
-        if (len("\n".join(out)) + len(", ".join([str(num) for num in results]))) > 2000:
-            big = True
-
-        if big:
-            await ctx.send("\n".join(out) + "\nThe rolls are too big to display!")
-        else:
-            await ctx.send("\n".join(out) + "\n" + (", ".join([str(num) for num in results])))
-        print("%s ROLLED %s." % (ctx.author.name.upper(), type))
-
-    @commands.command(brief="Roll a die. (1d6 by default)")
+    @commands.command(brief="Roll a die. (1d20s by default)")
     async def roll3(self, ctx, type="1d20"):
         amount = int(type.split("d")[0])
         try:
