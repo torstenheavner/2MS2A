@@ -1,7 +1,7 @@
-import sys
 from discord.ext import commands
-import discord
 import ease_of_use as eou
+import discord
+import sys
 
 
 
@@ -63,10 +63,10 @@ async def _reload(ctx, cog="all"):
 		for extension in cogs:
 			try:
 				bot.reload_extension(extension)
-				log.append("**%s** reloaded successfully." % extension)
+				log.append(f"**{extension}** reloaded successfully.")
 			except:
 				bot.load_extension(extension)
-				log.append("**%s** loaded successfully." % extension)
+				log.append(f"**{extension}** loaded successfully.")
 
 		embed = eou.makeEmbed(title="%s Reloaded Modules" % ctx.author.name, description="\n".join(log))
 		await ctx.send(embed=embed)
@@ -74,10 +74,10 @@ async def _reload(ctx, cog="all"):
 	else:
 		try:
 			bot.reload_extension(cog)
-			await ctx.send(embed=eou.makeEmbed(title="%s Reloaded %s" % (ctx.author.name, cog), description="Successfully reloaded!"))
+			await ctx.send(embed=eou.makeEmbed(title=f"{ctx.author.display_name} reloaded {cog}", description="Successfully reloaded!"))
 		except:
 			bot.load_extension(cog)
-			await ctx.send(embed=eou.makeEmbed(title="%s Reloaded %s" % (ctx.author.name, cog), description="Successfully loaded!"))
+			await ctx.send(embed=eou.makeEmbed(title=f"{ctx.author.display_name} reloaded {cog}", description="Successfully loaded!"))
 		eou.log(text="Reloaded %s" % cog.title(), ctx=ctx)
 
 
@@ -85,12 +85,13 @@ async def _reload(ctx, cog="all"):
 async def _reload_error(ctx, error):
 	if isinstance(error, commands.CheckFailure):
 		await ctx.send(embed=eou.makeEmbed(title="Whoops!", description="Only the bot owner can do that command."))
+		eou.log(text="Attempted to reload cog(s)", ctx=ctx)
 
 
 @bot.command(brief="Check if the bot is online")
 async def ping(ctx):
 	await ctx.send(embed=eou.makeEmbed(title="Pong!", description="2MS2A is online."))
-	eou.log(text="Bot Pinged", ctx=ctx)
+	eou.log(text="Pinged the bot", ctx=ctx)
 
 
 with open("T:/all 2/tokens/2MS2A.txt", "r") as token:
