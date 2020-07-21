@@ -151,7 +151,7 @@ class Levels(commands.Cog):
 
 		# Setup an embed variable
 		embed = eou.makeEmbed(title="Leaderboard", description="The 10 users with the highest XP")
-		embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
+		embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
 
 		# For each person in the top 10
 		for person in finals:
@@ -171,14 +171,34 @@ class Levels(commands.Cog):
 		# If the level is higher than 20, throw an error
 		if level > 20:
 			embed = eou.makeEmbed(title="Whoops!", description="Level 20 is the maximum")
-			embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
+			embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
 			return await ctx.send(embed=embed)
 
 		# Make the embed, adding necesarry fields
 		embed = eou.makeEmbed(title=f"Level Information", description=f"Level {level}")
+		embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
 		embed.add_field(name="XP Required", value=f"{self.requiredLevelXP[level-1]} XP")
 		embed.add_field(name="Proficiency Bonus", value=("+2" if level < 5 else ("+3" if level < 9 else ("+4" if level < 13 else ("+5" if level < 17 else "+6")))))
 
 		# Send the embed and log to console
 		await ctx.send(embed=embed)
 		eou.log(text=f"Got information on a level ({level})", cog="Levels", color="yellow", ctx=ctx)
+
+	@commands.command(brief="Get your current level, XP, and proficiency bonus")
+	async def stats(self, ctx):
+		# 2m.stats
+
+		# Setup variables
+		data = getData()
+		bonus = 2 if level < 5 else (3 if level < 9 else (4 if level < 13 else (5 if level < 17 else 6)))
+
+		# Make the embed, adding necesarry fields
+		embed = eou.makeEmbed(title="User Stats", description=ctx.author.display_name)
+		embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+		embed.add_field(name="Level", value=data["user stats"][ctx.author.name]["level"])
+		embed.add_field(name="XP", value=data["user stats"][ctx.author.name]["xp"])
+		embed=add_field(name="Proficiency Bonus", value=f"+{bonus}")
+
+		# Send the embed and log to console
+		await ctx.send(embed=embed)
+		eou.log(text="Got their user stats", cog="Levels", color="yellow", ctx=ctx)
