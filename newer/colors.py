@@ -2,6 +2,7 @@ from PIL import ImageFont, Image, ImageDraw
 from discord.ext import commands
 from random import choice
 import ease_of_use as eou
+from importlib import *
 import discord
 import json
 import os
@@ -106,3 +107,10 @@ class Colors(commands.Cog):
 
 
 	# 2m.samplesub [person] [font] [message]
+
+
+
+def setup(bot):
+	eou.log(text="Online", cog="Colors", color="cyan")
+	bot.add_cog(Colors(bot))
+	reload(eou)

@@ -1,6 +1,7 @@
 from discord.ext import tasks, commands
 from random import randint
 import ease_of_use as eou
+from importlib import *
 import discord
 import json
 import os
@@ -202,3 +203,10 @@ class Levels(commands.Cog):
 		# Send the embed and log to console
 		await ctx.send(embed=embed)
 		eou.log(text="Got their user stats", cog="Levels", color="yellow", ctx=ctx)
+
+
+
+def setup(bot):
+	eou.log(text="Online", cog="Levels", color="yellow")
+	bot.add_cog(Levels(bot))
+	reload(eou)
