@@ -98,7 +98,7 @@ class Levels(commands.Cog):
 
 		# Add the gained XP to their actual XP, and log to console
 		data["users"][message.author.id]["xp"] += totalXPGained
-		eou.log(text=f"Gained XP (f{totalXPGained})", cog="Levels", color="yellow")
+		eou.log(text=f"Gained XP (f{totalXPGained})", cog="Levels", color="yellow", ctx=message)
 
 		# If they have enough XP to level up
 		if data["users"][message.author.id]["xp"] >= self.requiredLevelXP[level]:
@@ -111,7 +111,53 @@ class Levels(commands.Cog):
 			await message.channel.send(embed=embed)
 
 			# Log to console
-			eou.log(text=f"Levelled up (Level {level+1})", cog="Levels", color="yellow")
+			eou.log(text=f"Levelled up (Level {level+1})", cog="Levels", color="yellow", ctx=message)
 
 		# Save the data
 		setData(data)
+
+
+
+	@commands.command(brief="Get the top 10 highest level users")
+	async def leaderboard(self, ctx):
+		# 2m.leaderboard
+
+		# Setup variables
+		data = getData()
+		scores = {"": 0}
+		finals = {}
+
+		# For each user in the server
+		for key in data["users"]:
+			# Isolate their XP and store it in scores
+			scores[key] = data["users"][key]["xp"]
+
+		# 10 times (for the top 10)
+		for i in range(10):
+			max = ""
+
+			# For each user
+			for user in scores:
+				# If their XP is more than the highest we already have
+				if scores[user] > scores[max]:
+					# Set them to the highest
+					max = user
+
+			# Add the highest to final dict
+			finals[max] = scores[max]
+
+			# Delete the highest score
+			del scores[max]
+
+		# Setup an embed variable
+		embed = eou.makeEmbed(title="Leaderboard", description="The 10 users with the highest XP")
+		embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
+
+		# For each person in the top 10
+		for person in finals:
+			# Add a field to the embed
+			embed.add_field(name=person.title(), value=f"{finals[person]} XP")
+
+		# Send the embed and log to console
+		await ctx.send(embed=embed)
+		eou.log(text="Got the XP leaderboard", cog="Levels", color="yellow", ctx=ctx)
