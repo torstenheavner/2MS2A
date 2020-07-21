@@ -161,3 +161,24 @@ class Levels(commands.Cog):
 		# Send the embed and log to console
 		await ctx.send(embed=embed)
 		eou.log(text="Got the XP leaderboard", cog="Levels", color="yellow", ctx=ctx)
+
+
+
+	@commands.command(brief="Get information on a level")
+	async def levelinfo(self, ctx, level: int):
+		# 2m.levelinfo [level]
+
+		# If the level is higher than 20, throw an error
+		if level > 20:
+			embed = eou.makeEmbed(title="Whoops!", description="Level 20 is the maximum")
+			embed.set_author(name=message.author.name, icon_url=message.author.avatar_url)
+			return await ctx.send(embed=embed)
+
+		# Make the embed, adding necesarry fields
+		embed = eou.makeEmbed(title=f"Level Information", description=f"Level {level}")
+		embed.add_field(name="XP Required", value=f"{self.requiredLevelXP[level-1]} XP")
+		embed.add_field(name="Proficiency Bonus", value=("+2" if level < 5 else ("+3" if level < 9 else ("+4" if level < 13 else ("+5" if level < 17 else "+6")))))
+
+		# Send the embed and log to console
+		await ctx.send(embed=embed)
+		eou.log(text=f"Got information on a level ({level})", cog="Levels", color="yellow", ctx=ctx)
