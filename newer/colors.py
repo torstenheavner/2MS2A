@@ -38,6 +38,8 @@ class Colors(commands.Cog):
 	# 2m.addcolor [person] [color]
 	# 2m.delcolor [person]
 
+	# 2m.setmycolor [color] ???
+
 
 
 	@commands.command(brief="Test a color by inputting a hex value")
@@ -96,7 +98,9 @@ class Colors(commands.Cog):
 			await ctx.message.delete()
 		except:
 			pass
-		await ctx.send(embed=eou.makeEmbed(title=f"List of all fonts, for {ctx.author.display_name}", description="\n".join([file.split(".")[0] for file in os.listdir("./fonts")])))
+		embed = eou.makeEmbed(title=f"List of All Fonts", description="\n".join([file.split(".")[0] for file in os.listdir("./fonts")]))
+		embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+		await ctx.send(embed=embed)
 		eou.log(text="Listed all fonts", cog="Colors", color="cyan", ctx=ctx)
 
 
