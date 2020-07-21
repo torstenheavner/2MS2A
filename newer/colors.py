@@ -16,7 +16,7 @@ def getData():
 
 def setData(_in):
 	with open("data.json", "w") as dataFile:
-		dataFile.write(json.dumps(_in, indent=1))
+		dataFile.write(json.dumps(_in, indent=4))
 
 
 
@@ -52,7 +52,7 @@ class Colors(commands.Cog):
 			await ctx.message.delete()
 		except:
 			pass
-		if color.startsWith("#"):
+		if color.startswith("#"):
 			color = color[1:]
 
 		# Define width and height of image, then get the font from a file
@@ -70,12 +70,12 @@ class Colors(commands.Cog):
 		verydark = [((i-120) if (i-120 > 0) else 0) for i in hexToRGB(color)]
 
 		# Draw text on the image, and save the image
-		draw.text((7, 4), (f"#{color}").upper(), tuple(verydark), font=font1)
-		draw.text((5, 2), (f"#{color}").upper(), (255, 255, 255), font=font1)
-		draw.text((150, 6), ("#%02x%02x%02x" % tuple(verylight)).upper(), tuple(verylight), font=font1)
-		draw.text((150, 6), ("\n#%02x%02x%02x" % tuple(light)).upper(), tuple(light), font=font1)
-		draw.text((150, 6), ("\n\n#%02x%02x%02x" % tuple(dark)).upper(), tuple(dark), font=font1)
-		draw.text((150, 2), ("\n\n\n#%02x%02x%02x" % tuple(verydark)).upper(), tuple(verydark), font=font1)
+		draw.text((7, 4), (f"#{color}").upper(), tuple(verydark), font=roboto)
+		draw.text((5, 2), (f"#{color}").upper(), (255, 255, 255), font=roboto)
+		draw.text((150, 6), ("#%02x%02x%02x" % tuple(verylight)).upper(), tuple(verylight), font=roboto)
+		draw.text((150, 6), ("\n#%02x%02x%02x" % tuple(light)).upper(), tuple(light), font=roboto)
+		draw.text((150, 6), ("\n\n#%02x%02x%02x" % tuple(dark)).upper(), tuple(dark), font=roboto)
+		draw.text((150, 2), ("\n\n\n#%02x%02x%02x" % tuple(verydark)).upper(), tuple(verydark), font=roboto)
 		img.save("./images/color.png")
 
 		# Send the message and print output

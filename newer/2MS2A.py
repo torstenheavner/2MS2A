@@ -18,7 +18,7 @@ def getData():
 
 def setData(_in):
 	with open("data.json", "w") as dataFile:
-		dataFile.write(json.dumps(_in, indent=1))
+		dataFile.write(json.dumps(_in, indent=4))
 
 
 

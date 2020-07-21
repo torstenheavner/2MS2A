@@ -15,7 +15,7 @@ def getData():
 
 def setData(_in):
 	with open("data.json", "w") as dataFile:
-		dataFile.write(json.dumps(_in, indent=1))
+		dataFile.write(json.dumps(_in, indent=4))
 
 
 
@@ -62,11 +62,11 @@ class Levels(commands.Cog):
 		# Try to get the users data
 		# If no data is found, give them the base stats
 		try:
-			userData = data["users"][message.author.id]
-			level = userData["level"]
+			userData = data["users"][str(message.author.id)]
 		except:
-			data["users"][message.author.id] = self.baseStats
+			data["users"][str(message.author.id)] = self.baseStats
 			userData = self.baseStats
+		level = userData["level"]
 
 		# They gain the usual amount of XP by default
 		totalXPGained += randint(1, 10)
@@ -98,13 +98,13 @@ class Levels(commands.Cog):
 					totalXPGained += randint(0, roll)
 
 		# Add the gained XP to their actual XP, and log to console
-		data["users"][message.author.id]["xp"] += totalXPGained
-		eou.log(text=f"Gained XP (f{totalXPGained})", cog="Levels", color="yellow", ctx=message)
+		data["users"][str(message.author.id)]["xp"] += totalXPGained
+		eou.log(text=f"Gained XP ({totalXPGained})", cog="Levels", color="yellow", ctx=message)
 
 		# If they have enough XP to level up
-		if data["users"][message.author.id]["xp"] >= self.requiredLevelXP[level]:
+		if data["users"][str(message.author.id)]["xp"] >= self.requiredLevelXP[level]:
 			# Level them up
-			data["users"][message.author.id]["level"] += 1
+			data["users"][str(message.author.id)]["level"] += 1
 
 			# Announce they level up
 			embed = eou.makeEmbed(title="Level Up!", description=f"Levelled up to level {level+1}")
@@ -191,14 +191,15 @@ class Levels(commands.Cog):
 
 		# Setup variables
 		data = getData()
+		level = data["users"][str(ctx.author.id)]["level"]
 		bonus = 2 if level < 5 else (3 if level < 9 else (4 if level < 13 else (5 if level < 17 else 6)))
 
 		# Make the embed, adding necesarry fields
 		embed = eou.makeEmbed(title="User Stats", description=ctx.author.display_name)
 		embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
-		embed.add_field(name="Level", value=data["user stats"][ctx.author.name]["level"])
-		embed.add_field(name="XP", value=data["user stats"][ctx.author.name]["xp"])
-		embed=add_field(name="Proficiency Bonus", value=f"+{bonus}")
+		embed.add_field(name="Level", value=data["users"][str(ctx.author.id)]["level"])
+		embed.add_field(name="XP", value=data["users"][str(ctx.author.id)]["xp"])
+		embed.add_field(name="Proficiency Bonus", value=f"+{bonus}")
 
 		# Send the embed and log to console
 		await ctx.send(embed=embed)
