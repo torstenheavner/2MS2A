@@ -90,6 +90,10 @@ async def _reload(ctx, cog="all"):
 @_reload.error
 async def _reload_error(ctx, error):
 	if isinstance(error, commands.CheckFailure):
+		try:
+			await ctx.message.delete()
+		except:
+			pass
 		embed = eou.makeEmbed(title="Whoops!", description="Only the bot owner can do that command.")
 		embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
 		await ctx.send(embed=embed)
