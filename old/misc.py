@@ -287,6 +287,10 @@ class MISC(commands.Cog):
         except:
             pass
 
+    @commands.command()
+    async def testng(self, ctx):
+        await ctx.send(f"ctx.author.avatar : {ctx.author.avatar}\nctx.author.avatar_url : {ctx.author.avatar_url}\nctx.author.name : {ctx.author.name}\nctx.author.display_name : {ctx.author.display_name}")
+
     def custom_exec(self, _in):
         global u
         exec("global u; u = (%s)" % _in)
