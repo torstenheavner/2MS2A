@@ -26,7 +26,7 @@ for extension in cogs:
 @bot.event
 async def on_ready():
     clear()
-    print("\nTOO MUCH STUFF TO AUTOMATE (BETA)\nONLINE\n\n")
+    print("\nTOO MUCH STUFF TO AUTOMATE\nONLINE\n\n")
 
 
 @bot.command(brief="Check if the bot is responding.")
