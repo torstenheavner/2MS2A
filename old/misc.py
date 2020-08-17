@@ -572,6 +572,11 @@ class MISC(commands.Cog):
         await ctx.send(embed=embed)
         print("%s FLIPPED A COIN." % ctx.author.name.upper())
 
+    @commands.command(brief="Choose from something")
+    async def choose(self, ctx, *, choices):
+        choices = choices.split(", ")
+        await ctx.send(choice(choices))
+
 
 def setup(bot):
     bot.add_cog(MISC(bot))

@@ -35,8 +35,8 @@ class Levels(commands.Cog):
 
 
 	def cog_unload(self):
-		self.hell_ac.cancel()
 		eou.log(text="Offline", cog="Levels", color="yellow")
+		self.hell_ac.cancel()
 
 
 

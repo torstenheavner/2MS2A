@@ -7,7 +7,7 @@ import sys
 
 
 # create the bot
-bot = commands.Bot(command_prefix="2m.")
+bot = commands.Bot(command_prefix="2mb.")
 
 
 

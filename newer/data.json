@@ -1,16 +1,103 @@
 {
     "cogs": [
         "colors",
-        "levels"
+        "levels",
+        "activities"
     ],
     "users": {
         "184474965859368960": {
-            "xp": 241,
-            "level": 1
+            "xp": 4540,
+            "level": 4
         },
         "274313709579665408": {
-            "xp": 123,
+            "xp": 784,
+            "level": 2
+        },
+        "266681602774401035": {
+            "xp": 3545,
+            "level": 4
+        },
+        "320380749373243393": {
+            "xp": 566,
+            "level": 2
+        },
+        "578636294830424064": {
+            "xp": 135,
+            "level": 1
+        },
+        "404139654284050432": {
+            "xp": 984,
+            "level": 3
+        },
+        "204049688666701824": {
+            "xp": 1747,
+            "level": 3
+        },
+        "289896214810329088": {
+            "xp": 155,
+            "level": 1
+        },
+        "136664437431074816": {
+            "xp": 823,
+            "level": 2
+        },
+        "380851967125356547": {
+            "xp": 169,
+            "level": 1
+        },
+        "392166173996744715": {
+            "xp": 61,
+            "level": 1
+        },
+        "456971201378779146": {
+            "xp": 84,
+            "level": 1
+        },
+        "285943113975857153": {
+            "xp": 156,
+            "level": 1
+        },
+        "199887258038304769": {
+            "xp": 98,
+            "level": 1
+        },
+        "339106874517487616": {
+            "xp": 40,
+            "level": 1
+        },
+        "358679171842441217": {
+            "xp": 32,
+            "level": 1
+        },
+        "284472035038724098": {
+            "xp": 5,
+            "level": 1
+        },
+        "202257215183126529": {
+            "xp": 12,
             "level": 1
         }
+    },
+    "activities": {
+        "184474965859368960": [
+            "CSGO wingman",
+            "CSGO comp",
+            "Draw for 30 minutes",
+            "Two Rocket League matches",
+            "Osu for 30 minutes",
+            "Beat Saber for 30 minutes",
+            "Starbound for 30 minutes",
+            "Half Life: Alyx for 30 minutes",
+            "Minecraft for 30 minutes",
+            "Two R6 matches"
+        ],
+        "274313709579665408": [
+            "Fucking die.",
+            "Vibe to music.",
+            "Explodey sandbox games.",
+            "Draw something.",
+            "Write something.",
+            "Go the fuck outside."
+        ]
     }
 }

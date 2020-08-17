@@ -54,7 +54,7 @@ class Activities(commands.Cog):
 		data["activities"][str(ctx.author.id)].append(activity)
 
 		# Make embed object
-		embed = eou.makeEmbed(title="Activity Added!" description=activity)
+		embed = eou.makeEmbed(title="Activity Added!", description=activity)
 		embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
 
 		# Send message, log to console, and save data
@@ -88,7 +88,7 @@ class Activities(commands.Cog):
 			return await ctx.send(embed=embed)
 
 		# Make embed object
-		embed = eou.makeEmbed(title="Activity Removed!" description=activity)
+		embed = eou.makeEmbed(title="Activity Removed!", description=activity)
 		embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
 
 		# Send message, log to console, and save data
@@ -118,7 +118,7 @@ class Activities(commands.Cog):
 			return await ctx.send(embed=embed)
 
 		# Make embed object
-		embed = eou.makeEmbed(title=f"All of {person.name}'s Activities!" description="\n".join(userActivities))
+		embed = eou.makeEmbed(title=f"All of {person.name}'s Activities!", description="\n".join(userActivities))
 		embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
 
 		# Send message, log to console
@@ -146,7 +146,7 @@ class Activities(commands.Cog):
 		activity = choice(userActivities)
 
 		# Make embed object
-		embed = eou.makeEmbed(title="Activity Retrieved!" description=activity)
+		embed = eou.makeEmbed(title="Activity Retrieved!", description=activity)
 		embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
 
 		# Send message, log to console, and save data
